@@ -130,12 +130,12 @@ def display_conversation_log():
                         st.divider()
                         # 「情報源」の文字を太字で表示
                         st.markdown(f"##### {message['content']['message']}")
+                        st.markdown(message['content'])
                         # ドキュメントのありかを一覧表示
                         for file_info in message["content"]["file_info_list"]:
                             # 参照元のありかに応じて、適したアイコンを取得
                             icon = utils.get_source_icon(file_info)
                             # ページ番号が取得できた場合のみ、ページ番号を表示
-                            st.markdown(file_info)
                             if "page_number" in file_info:
                                 st.info(f"{file_info}（ページNo{file_info['page_number']+1}）", icon=icon)
                             else:
