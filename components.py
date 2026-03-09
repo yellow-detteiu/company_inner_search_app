@@ -130,7 +130,7 @@ def display_conversation_log():
                         st.divider()
                         # 「情報源」の文字を太字で表示
                         st.markdown(f"##### {message['content']['message']}")
-                        st.markdown(message['content'])
+                        #st.markdown(message['content'])
                         # ドキュメントのありかを一覧表示
                         for file_info in message["content"]["file_info_list"]:
                             # 参照元のありかに応じて、適したアイコンを取得
