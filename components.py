@@ -125,6 +125,7 @@ def display_conversation_log():
 
                     # 参照元のありかを一覧表示
                     if "file_info_list" in message["content"]:
+                        print(message["content"])
                         # 区切り線の表示
                         st.divider()
                         # 「情報源」の文字を太字で表示
