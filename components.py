@@ -89,6 +89,7 @@ def display_conversation_log():
                         # ==========================================
                         # 補足文の表示
                         st.markdown(message["content"]["main_message"])
+                        st.markdown(message["content"])
 
                         # 参照元のありかに応じて、適したアイコンを取得
                         icon = utils.get_source_icon(message['content']['main_file_path'])
@@ -125,7 +126,6 @@ def display_conversation_log():
 
                     # 参照元のありかを一覧表示
                     if "file_info_list" in message["content"]:
-                        st.info(message["content"])
                         # 区切り線の表示
                         st.divider()
                         # 「情報源」の文字を太字で表示
