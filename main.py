@@ -44,8 +44,11 @@ except Exception as e:
     logger.error(f"{ct.INITIALIZE_ERROR_MESSAGE}\n{e}")
     # エラーメッセージの画面表示
     st.error(utils.build_error_message(ct.INITIALIZE_ERROR_MESSAGE), icon=ct.ERROR_ICON)
+    # 例外の詳細情報を画面表示
+    with st.expander("エラー詳細を表示", expanded=False):
+        st.exception(e)
     # 後続の処理を中断
-    st.stop()
+    st.stop()   
 
 # アプリ起動時のログファイルへの出力
 if not "initialized" in st.session_state:
