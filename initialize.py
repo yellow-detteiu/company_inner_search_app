@@ -228,7 +228,7 @@ def file_load(path, docs_all):
                 metadata={"source": path, "file_name": file_name, "merged_from": len(docs)}
             )
             print(f'統合後：{merged_doc}')
-            docs_all.extend(merged_doc)
+            docs_all.append(merged_doc)
         """
         # ファイルの拡張子に合ったdata loaderを使ってデータ読み込み
         loader = ct.SUPPORTED_EXTENSIONS[file_extension](path)

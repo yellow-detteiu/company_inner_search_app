@@ -308,7 +308,7 @@ def display_contact_llm_response(llm_response):
                 # ページ番号を取得
                 page_number = document.metadata["page"]
                 # 「ファイルパス」と「ページ番号」
-                file_info = f"{file_path}"
+                file_info = f"{file_path}（No{page_number+1}）"
             else:
                 # 「ファイルパス」のみ
                 file_info = f"{file_path}"
