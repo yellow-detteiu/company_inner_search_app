@@ -216,6 +216,7 @@ def file_load(path, docs_all):
 
     # 想定していたファイル形式の場合のみ読み込む
     if file_extension in ct.SUPPORTED_EXTENSIONS:
+        """
         # 社員名簿は統合して読み込む
         if '社員名簿.csv' in file_name:
             loader = ct.SUPPORTED_EXTENSIONS[file_extension](path)
@@ -228,6 +229,7 @@ def file_load(path, docs_all):
             )
             print(f'統合後：{merged_doc}')
             docs_all.extend(merged_doc)
+        """
         # ファイルの拡張子に合ったdata loaderを使ってデータ読み込み
         loader = ct.SUPPORTED_EXTENSIONS[file_extension](path)
         docs = loader.load()
