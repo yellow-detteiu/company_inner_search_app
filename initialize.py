@@ -190,6 +190,8 @@ def recursive_file_check(path, docs_all):
         files = os.listdir(path)
         # 各ファイル/フォルダに対して処理
         for file in files:
+            #if file == '社員名簿.csv':
+
             # ファイル/フォルダ名だけでなく、フルパスを取得
             full_path = os.path.join(path, file)
             # フルパスを渡し、再帰的にファイル読み込みの関数を実行
@@ -214,6 +216,18 @@ def file_load(path, docs_all):
 
     # 想定していたファイル形式の場合のみ読み込む
     if file_extension in ct.SUPPORTED_EXTENSIONS:
+        # 社員名簿は統合して読み込む
+        if '社員名簿.csv' in file_name:
+            loader = ct.SUPPORTED_EXTENSIONS[file_extension](path)
+            docs = loader.load()
+            print(f'統合前：{docs}')
+            merged_text = "\n".join(doc.page_content for doc in docs if doc.page_content)
+            merged_doc = Document(
+                page_content=merged_text,
+                metadata={"source": path, "file_name": file_name, "merged_from": len(docs)}
+            )
+            print(f'統合後：{merged_doc}')
+            docs_all.extend(merged_doc)
         # ファイルの拡張子に合ったdata loaderを使ってデータ読み込み
         loader = ct.SUPPORTED_EXTENSIONS[file_extension](path)
         docs = loader.load()
