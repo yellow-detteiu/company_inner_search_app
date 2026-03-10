@@ -18,6 +18,7 @@ from langchain_community.document_loaders import WebBaseLoader
 from langchain.text_splitter import CharacterTextSplitter
 from langchain_openai import OpenAIEmbeddings
 from langchain_community.vectorstores import Chroma
+from langchain_core.documents import Document as LangchainDocument
 import constants as ct
 
 
@@ -223,7 +224,7 @@ def file_load(path, docs_all):
             docs = loader.load()
             print(f'統合前：{docs}')
             merged_text = "\n".join(doc.page_content for doc in docs if doc.page_content)
-            merged_doc = Document(
+            merged_doc = LangchainDocument(
                 metadata={"source": path, "file_name": file_name, "merged_from": len(docs)},
                 page_content=merged_text,
             )
