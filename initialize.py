@@ -129,8 +129,10 @@ def initialize_retriever():
         separator="\n"
     )
 
-    # チャンク分割を実施
-    splitted_docs = text_splitter.split_documents(docs_all)
+    # チャンク分割を実施（社員名簿.csvだけチャンクサイズを大きくする）
+    #splitted_docs = text_splitter.split_documents(docs_all)
+    splitted_docs = split_documents_with_dynamic_chunk_size(docs_all)
+
 
     # ベクターストアの作成
     db = Chroma.from_documents(splitted_docs, embedding=embeddings)
@@ -138,6 +140,35 @@ def initialize_retriever():
     # ベクターストアを検索するRetrieverの作成
     st.session_state.retriever = db.as_retriever(search_kwargs={"k": ct.SEARCH_KWARGS})
 
+def split_documents_with_dynamic_chunk_size(docs_all):
+    """
+    社員名簿.csvのみ大きいチャンクで分割し、それ以外は通常設定で分割
+    """
+    normal_splitter = CharacterTextSplitter(
+        chunk_size=ct.CHUNK_SIZE,
+        chunk_overlap=ct.CHUNK_OVERLAP,
+        separator="\n",
+    )
+
+    employee_splitter = CharacterTextSplitter(
+        chunk_size=ct.EMPLOYEE_CHUNK_SIZE,  # ここを任意で調整
+        chunk_overlap=ct.EMPLOYEE_CHUNK_OVERLAP,
+        separator="\n",
+    )
+
+    splitted_docs = []
+    for doc in docs_all:
+        source = str(doc.metadata.get("source", ""))
+        file_name = str(doc.metadata.get("file_name", ""))
+
+        is_employee_csv = source.endswith("社員名簿.csv") or file_name == "社員名簿.csv"
+
+        if is_employee_csv:
+            splitted_docs.extend(employee_splitter.split_documents([doc]))
+        else:
+            splitted_docs.extend(normal_splitter.split_documents([doc]))
+
+    return splitted_docs
 
 def initialize_session_state():
     """
