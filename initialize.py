@@ -224,8 +224,8 @@ def file_load(path, docs_all):
             print(f'統合前：{docs}')
             merged_text = "\n".join(doc.page_content for doc in docs if doc.page_content)
             merged_doc = Document(
+                metadata={"source": path, "file_name": file_name, "merged_from": len(docs)},
                 page_content=merged_text,
-                metadata={"source": path, "file_name": file_name, "merged_from": len(docs)}
             )
             print(f'統合後：{merged_doc}')
             docs_all.append(merged_doc)
