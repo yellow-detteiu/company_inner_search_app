@@ -241,6 +241,8 @@ def file_load(path, docs_all):
         path: ファイルパス
         docs_all: データソースを格納する用のリスト
     """
+    logger = logging.getLogger(ct.LOGGER_NAME)
+
     # ファイルの拡張子を取得
     file_extension = os.path.splitext(path)[1]
     # ファイル名（拡張子を含む）を取得
@@ -253,13 +255,29 @@ def file_load(path, docs_all):
         if '社員名簿.csv' in file_name:
             loader = ct.SUPPORTED_EXTENSIONS[file_extension](path)
             docs = loader.load()
-            print(f'統合前：{docs}')
+
+            logger.info(
+                "社員名簿の統合前ドキュメント数: file=%s, count=%d",
+                path,
+                len(docs),
+            )
+
             merged_text = "\n".join(doc.page_content for doc in docs if doc.page_content)
             merged_doc = LangchainDocument(
                 metadata={"source": path, "file_name": file_name, "merged_from": len(docs)},
                 page_content=merged_text,
             )
-            print(f'統合後：{merged_doc}')
+            
+            # ログに格納
+            logger.info(
+                "社員名簿を統合: file=%s, merged_from=%d, merged_text_len=%d",
+                path,
+                len(docs),
+                len(merged_text),
+            )
+            # 詳細を見たいときだけ
+            logger.debug("統合後メタデータ: %s", merged_doc.metadata)
+
             docs_all.append(merged_doc)
         else:
             # ファイルの拡張子に合ったdata loaderを使ってデータ読み込み

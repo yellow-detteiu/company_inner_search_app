@@ -125,21 +125,21 @@ def display_conversation_log():
                     st.markdown(message["content"]["answer"])
 
                     # 参照元のありかを一覧表示
-                    if "file_info_list" in message["content"]:
+                    if "file_info_dict" in message["content"]:
                         # 区切り線の表示
                         st.divider()
                         # 「情報源」の文字を太字で表示
                         st.markdown(f"##### {message['content']['message']}")
                         #st.markdown(message['content'])
                         # ドキュメントのありかを一覧表示
-                        for file_info in message["content"]["file_info_list"]:
+                        for file_path, page_number in zip(message["content"]["file_info_dict"]["file_path"], message["content"]["file_info_dict"]["page_number"]):
                             # 参照元のありかに応じて、適したアイコンを取得
-                            icon = utils.get_source_icon(file_info)
+                            icon = utils.get_source_icon(file_path)
                             # ページ番号が取得できた場合のみ、ページ番号を表示
-                            if "page_number" in file_info:
-                                st.info(f"{file_info}（ページNo{file_info['page_number']+1}）", icon=icon)
+                            if page_number is not None:
+                                st.info(f"{file_path}（ページNo{page_number+1}）", icon=icon)
                             else:
-                                st.info(file_info, icon=icon)
+                                st.info(f"{file_path}", icon=icon)
 
 
 def display_search_llm_response(llm_response):
@@ -291,9 +291,10 @@ def display_contact_llm_response(llm_response):
         message = "情報源"
         st.markdown(f"##### {message}")
 
-        # 参照元のファイルパスの一覧を格納するためのリストを用意
+        # 参照元のファイルパスの一覧を格納するためのリストや辞書を用意
         file_path_list = []
-        file_info_list = []
+        #file_info_list = []
+        file_info_dict = {'file_path':[], 'page_number':[]} # ファイルパスとページ番号をセットで格納するための辞書
 
         # LLMが回答生成の参照元として使ったドキュメントの一覧が「context」内のリストの中に入っているため、ループ処理
         for document in llm_response["context"]:
@@ -321,7 +322,13 @@ def display_contact_llm_response(llm_response):
             # 重複チェック用に、ファイルパスをリストに順次追加
             file_path_list.append(file_path)
             # ファイル情報をリストに順次追加
-            file_info_list.append(file_info)
+            #file_info_list.append(file_info)
+            # ファイル情報を辞書に順次追加
+            file_info_dict['file_path'].append(file_path)
+            if "page" in document.metadata:
+                file_info_dict['page_number'].append(page_number)
+            else:
+                file_info_dict['page_number'].append(None) # ページ番号がない場合はNoneを追加
 
     # 表示用の会話ログに格納するためのデータを用意
     # - 「mode」: モード（「社内文書検索」or「社内問い合わせ」）
@@ -334,6 +341,6 @@ def display_contact_llm_response(llm_response):
     # 参照元のドキュメントが取得できた場合のみ
     if llm_response["answer"] != ct.INQUIRY_NO_MATCH_ANSWER:
         content["message"] = message
-        content["file_info_list"] = file_info_list
+        content["file_info_dict"] = file_info_dict
 
     return content
